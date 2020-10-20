@@ -11,8 +11,8 @@ public class Main {
 
             i++;
 
-            Counter counter = new Counter();
-//            Counter counter = new SynchronizedCounter();
+//            Counter counter = new Counter();
+            Counter counter = new SynchronizedCounter();
             Incrementer incrementer = new Incrementer(counter);
             Decrementer decrementer = new Decrementer(counter);
 
@@ -41,6 +41,5 @@ public class Main {
                 raceOccurrences++;
             }
         }
-
     }
 }

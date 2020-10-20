@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 public class Producer implements Runnable {
 
     private final Buffer buffer;
-    private static final int ILOSC = 50;
+    private static final int ILOSC = 100;
 
     public void run() {
 

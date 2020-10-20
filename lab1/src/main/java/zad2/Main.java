@@ -16,13 +16,5 @@ public class Main {
         producerThread.start();
         consumer1Thread.start();
         consumer2Thread.start();
-
-//        try {
-//            producerThread.join();
-//            consumer1Thread.join();
-//            consumer2Thread.join();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
     }
 }

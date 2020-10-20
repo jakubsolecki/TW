@@ -3,7 +3,7 @@ package zad1;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class Decrementer implements Runnable{
+public class Decrementer implements Runnable {
 
     private final Counter counter;
 
