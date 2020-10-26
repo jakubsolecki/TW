@@ -12,21 +12,20 @@ public class MyBinarySemaphore {
             }
         } catch (InterruptedException ignored) {}
 
-        changeStatus(false);
+        opened = false;
+//        changeStatus(false);
+
     }
 
     public synchronized void release() {
-        try {
-            while (opened) {
-                wait();
-            }
-        } catch (InterruptedException ignored) {}
 
-        changeStatus(true);
-    }
-
-    private synchronized void changeStatus(boolean newStatus) {
-        opened = newStatus;
+        opened = true;
         notifyAll();
+//        changeStatus(true);
     }
+//
+//    private synchronized void changeStatus(boolean newStatus) {
+//        opened = newStatus;
+//        notifyAll();
+//    }
 }
