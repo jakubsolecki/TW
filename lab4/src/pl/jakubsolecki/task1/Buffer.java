@@ -41,14 +41,15 @@ public class Buffer {
 
     public void produce() {
         lock.lock();
-        while (indexNotReady(-1, producerIndex)) {
+        int currentIndex = producerIndex;
+        while (indexNotReady(-1, currentIndex)) {
                 try {
                     waitForConsumer.await();
                 } catch (InterruptedException ignored) {}
         }
-        bufferArray[producerIndex] = 0;
-        producerIndex = producerIndex +1 != bufferSize ? producerIndex +1 : 0;
-        System.out.println("Produced 0 at index: " + producerIndex);
+        bufferArray[currentIndex] = 0;
+        producerIndex = currentIndex +1 != bufferSize ? currentIndex+1 : 0;
+        System.out.println("Producer at index: " + currentIndex);
         System.out.println(Arrays.toString(bufferArray) + "\n");
         waitForProcessor[0].signalAll();
         lock.unlock();
@@ -56,14 +57,15 @@ public class Buffer {
 
     public void process(int processorNo) {
         lock.lock();
-        while (indexNotReady(processorNo, processorsIndexes[processorNo])) {
+        int currentIndex = processorsIndexes[processorNo];
+        while (indexNotReady(processorNo, currentIndex)) {
             try {
                 waitForProcessor[processorNo].await();
             } catch (InterruptedException ignored) {}
         }
-        bufferArray[processorsIndexes[processorNo]] = processorNo+1;
-        processorsIndexes[processorNo] = processorsIndexes[processorNo]+1 != bufferSize ? processorsIndexes[processorNo]+1 : 0;
-        System.out.println("Process " + processorNo + " processed at index: " + processorsIndexes[processorNo]);
+        bufferArray[currentIndex] = processorNo+1;
+        processorsIndexes[processorNo] = currentIndex+1 != bufferSize ? currentIndex+1 : 0;
+        System.out.println("Processor " + processorNo + " at index: " + currentIndex);
         System.out.println(Arrays.toString(bufferArray) + "\n");
         if (processorNo < processors - 1) {
             waitForProcessor[processorNo + 1].signalAll();
@@ -75,14 +77,15 @@ public class Buffer {
 
     public void consume() {
         lock.lock();
-        while (indexNotReady(processors, consumerIndex)) {
+        int currentIndex = consumerIndex;
+        while (indexNotReady(processors, currentIndex)) {
             try {
                 waitForPut.await();
             } catch (InterruptedException ignored) {}
         }
-        bufferArray[consumerIndex] = -1;
-        consumerIndex = consumerIndex +1 != bufferSize ? consumerIndex +1 : 0;
-        System.out.println("Consumer ate at index: " + consumerIndex);
+        bufferArray[currentIndex] = -1;
+        consumerIndex = currentIndex +1 != bufferSize ? currentIndex +1 : 0;
+        System.out.println("Consumer ate at index: " + currentIndex);
         System.out.println(Arrays.toString(bufferArray) + "\n");
         waitForConsumer.signalAll();
         lock.unlock();
