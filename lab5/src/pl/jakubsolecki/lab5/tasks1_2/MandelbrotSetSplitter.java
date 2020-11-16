@@ -1,30 +1,39 @@
-package pl.jakubsolecki.lab5.task2;
+package pl.jakubsolecki.lab5.tasks1_2;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class MandelbrotCore extends JFrame {
+public class MandelbrotSetSplitter extends JFrame {
 
-    private final int MAX_ITER = 570;
-    private final double ZOOM = 150;
-    private final int WIDTH = 800;
-    private final int HEIGHT = 600;
+    private final int MAX_ITER;
+    private final double ZOOM;
+    private final int WIDTH;
+    private final int HEIGHT;
     private final int xPos, yPos, threads, tasks;
     private final BufferedImage I;
     private final ExecutorService executor;
     private final ArrayList<Future<ArrayList<PixelRecord2>>> delayedPixelRecordArrays = new ArrayList<>();
+    private final TimeMeter timeMeter;
 
-    public MandelbrotCore(
+    public MandelbrotSetSplitter(
+            int MAX_ITER,
+            double ZOOM,
+            int WIDTH,
+            int HEIGHT,
             int xPos,
             int yPos,
             int threads,
-            int tasks) {
+            int tasks,
+            TimeMeter timeMeter
+    ) throws IOException {
 
         super("Mandelbrot Set");
         setBounds(100, 100, WIDTH, HEIGHT);
@@ -32,19 +41,23 @@ public class MandelbrotCore extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         I = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         executor = Executors.newFixedThreadPool(threads);
+        this.MAX_ITER = MAX_ITER;
+        this.ZOOM = ZOOM;
+        this.WIDTH = WIDTH;
+        this.HEIGHT = HEIGHT;
         this.xPos = xPos;
         this.yPos = yPos;
         this.threads = threads;
         this.tasks = tasks;
+        this.timeMeter = timeMeter;
         compute();
     }
 
     private void compute () {
-        long startTime = System.nanoTime();
 
-        int chunkXSize = WIDTH / tasks;
+    timeMeter.startTime();
+
         int chunkYSize = HEIGHT / tasks;
-        int startX = 0;
         int startY = 0;
 
         for (int part = 0; part < tasks; part++) {
@@ -54,34 +67,27 @@ public class MandelbrotCore extends JFrame {
                         new MandelbrotSubsetCalculator(
                             MAX_ITER,
                             ZOOM,
-                            startX,
+                            xPos,
+                            yPos,
                             startY,
-                            startX + chunkXSize,
                             startY + chunkYSize
                         )
                     )
             );
 
-            startX += chunkXSize;
             startY += chunkYSize;
         }
 
-        ArrayList<PixelRecord2> computedPixels = new ArrayList<>();
-
-        for (Future<ArrayList<PixelRecord2>> pr : delayedPixelRecordArrays) {
+        for (Future<ArrayList<PixelRecord2>> fpr : delayedPixelRecordArrays) {
             try {
-                computedPixels.addAll(pr.get());
+                for (PixelRecord2 pr : fpr.get()) {
+                    int iter = pr.iter();
+                    I.setRGB(pr.x(), pr.y(), iter | (iter << 8));
+                }
             } catch (ExecutionException | InterruptedException ignored) {}
         }
 
-        // TODO: move to the upper for (join both fors)
-        for (PixelRecord2 pr : computedPixels) {
-            int iter = pr.iter();
-            I.setRGB(pr.x(), pr.y(), iter | (iter << 8));
-        }
-
-        double computingTime = System.nanoTime() - startTime;
-        System.out.println(computingTime / 1_000_000_000);
+        timeMeter.stopTime();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package pl.jakubsolecki.lab5.task1;
+package pl.jakubsolecki.lab5.warm_up;
 
 import javax.swing.*;
 import java.awt.*;
