@@ -9,10 +9,10 @@ public class FairBuffer implements Buffer {
     private final int BUFFER_SIZE;
     private int currentBufferSize;
     private final Lock lock = new ReentrantLock();
-    private final Condition waitForFirstProducer = lock.newCondition();
-    private final Condition waitAsFirstProducer = lock.newCondition();
-    private final Condition waitForFirstConsumer = lock.newCondition();
-    private final Condition waitAsFirstConsumer = lock.newCondition();
+    private final Condition waitForFirstProducerPlace = lock.newCondition();
+    private final Condition waitProducer = lock.newCondition();
+    private final Condition waitForFirstConsumerPlace = lock.newCondition();
+    private final Condition waitConsumer = lock.newCondition();
     private boolean firstConsumerAvailable = true;
     private boolean firstProducerAvailable = true;
     private final StatisticsGenerator statisticsGenerator = new StatisticsGenerator();
@@ -29,7 +29,7 @@ public class FairBuffer implements Buffer {
         statisticsGenerator.startTime(amount);
         while (!firstProducerAvailable) {
             try {
-                waitForFirstProducer.await();
+                waitForFirstProducerPlace.await();
             } catch (InterruptedException ignored) {}
         }
         System.out.println("Producer waiting for its turn");
@@ -37,14 +37,14 @@ public class FairBuffer implements Buffer {
         firstProducerAvailable = false;
         while (currentBufferSize + amount > BUFFER_SIZE) {
             try {
-                waitAsFirstProducer.await();
+                waitProducer.await();
             } catch (InterruptedException ignored) {}
         }
         currentBufferSize += amount;
         System.out.println("Producer added " + amount + " units\n Current buffer size: " + currentBufferSize + "\n");
         firstProducerAvailable = true;
-        waitAsFirstConsumer.signal();
-        waitForFirstProducer.signal();
+        waitConsumer.signal();
+        waitForFirstProducerPlace.signal();
 
         statisticsGenerator.stopTime();
         lock.unlock();
@@ -57,7 +57,7 @@ public class FairBuffer implements Buffer {
         statisticsGenerator.startTime(amount);
         while (!firstConsumerAvailable) {
             try {
-                waitForFirstConsumer.await();
+                waitForFirstConsumerPlace.await();
             } catch (InterruptedException ignored) {}
         }
         System.out.println("Producer waiting for its turn");
@@ -65,14 +65,14 @@ public class FairBuffer implements Buffer {
         firstConsumerAvailable = false;
         while (currentBufferSize < amount) {
             try {
-                waitAsFirstConsumer.await();
+                waitConsumer.await();
             } catch (InterruptedException ignored) {}
         }
         currentBufferSize -= amount;
         System.out.println("Consumer took " + amount + " units\n Current buffer size: " + currentBufferSize + "\n");
         firstConsumerAvailable = true;
-        waitAsFirstProducer.signal();
-        waitForFirstConsumer.signal();
+        waitProducer.signal();
+        waitForFirstConsumerPlace.signal();
 
         statisticsGenerator.stopTime();
         lock.unlock();
