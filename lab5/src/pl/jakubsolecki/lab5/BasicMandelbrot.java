@@ -1,4 +1,4 @@
-package pl.jakubsolecki.lab5.task1;
+package pl.jakubsolecki.lab5;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -12,7 +12,7 @@ public class BasicMandelbrot extends JFrame {
     private double zx, zy, cX, cY, tmp;
 
     public BasicMandelbrot() {
-        super("BasicMandelbrot Set");
+        super("Mandelbrot Set");
         setBounds(100, 100, 800, 600);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);

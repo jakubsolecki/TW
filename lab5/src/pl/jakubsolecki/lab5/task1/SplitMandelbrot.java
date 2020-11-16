@@ -3,7 +3,6 @@ package pl.jakubsolecki.lab5.task1;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +22,7 @@ public class SplitMandelbrot extends JFrame {
 
     public SplitMandelbrot(int threads, int xPos, int yPos) {
         super("BasicMandelbrot Set");
-        setBounds(100, 100, 800, 600);
+        setBounds(100, 100, WIDTH, HEIGHT);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         I = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -52,7 +51,7 @@ public class SplitMandelbrot extends JFrame {
         for (PixelRecord pr : pixelRecords) {
             try {
                 int iter = pr.iter().get();
-                I.setRGB(pr.x(), pr.ym(), iter | (iter << 8));
+                I.setRGB(pr.x(), pr.y(), iter | (iter << 8));
             } catch (InterruptedException | ExecutionException ignored) {}
         }
 
