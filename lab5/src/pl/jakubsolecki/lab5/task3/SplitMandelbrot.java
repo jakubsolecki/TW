@@ -13,23 +13,37 @@ import java.util.concurrent.Future;
 
 public class SplitMandelbrot extends JFrame {
 
-    private final int MAX_ITER = 570;
-    private final double ZOOM = 200;
-    private final int WIDTH = 800;
-    private final int HEIGHT = 600;
+    private final int MAX_ITER;
+    private final double ZOOM;
+    private final int WIDTH;
+    private final int HEIGHT;
     private final int xPos, yPos;
     private final BufferedImage I;
     private final ExecutorService executor;
     private final ArrayList<PixelRecord> pixelRecords = new ArrayList<>();
     private final TimeMeter timeMeter;
 
-    public SplitMandelbrot(int threads, int xPos, int yPos, TimeMeter timeMeter) {
+    public SplitMandelbrot(
+            int MAX_ITER,
+            double ZOOM,
+            int WIDTH,
+            int HEIGHT,
+            int xPos,
+            int yPos,
+            int threads,
+            TimeMeter timeMeter
+    ) {
+
         super("BasicMandelbrot Set");
         setBounds(100, 100, WIDTH, HEIGHT);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         I = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
         executor = Executors.newFixedThreadPool(threads);
+        this.MAX_ITER = MAX_ITER;
+        this.ZOOM = ZOOM;
+        this.WIDTH = WIDTH;
+        this.HEIGHT = HEIGHT;
         this.xPos = xPos;
         this.yPos = yPos;
         this.timeMeter = timeMeter;
@@ -59,7 +73,7 @@ public class SplitMandelbrot extends JFrame {
             } catch (InterruptedException | ExecutionException ignored) {}
         }
 
-        timeMeter.startTime();
+        timeMeter.stopTime();
     }
 
     @Override

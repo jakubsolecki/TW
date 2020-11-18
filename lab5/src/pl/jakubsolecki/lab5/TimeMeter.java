@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class TimeMeter {
 
     private final String FILE_NAME;
+    private final int MAX_ITER;
     private final FileWriter fileWriter;
     private final PrintWriter printWriter;
     private final List<Double> workTimes = new ArrayList<>();
@@ -19,8 +20,9 @@ public class TimeMeter {
 
     private Long tmpStartTime;
 
-    public TimeMeter(String FILE_NAME) throws IOException {
+    public TimeMeter(String FILE_NAME, int MAX_ITER) throws IOException {
         this.FILE_NAME = FILE_NAME;
+        this.MAX_ITER = MAX_ITER;
         this.fileWriter = new FileWriter(FILE_NAME);
         this.printWriter = new PrintWriter(fileWriter);
     }
@@ -44,13 +46,15 @@ public class TimeMeter {
                 .summaryStatistics();
 
         Double mean = statistics.getAverage();
-        System.out.println("\nAvg: " + mean.toString());
+//        System.out.println("\nAvg: " + mean.toString());
 
         double standardDeviation = workTimes.stream()
                 .map(a -> Math.pow(a - mean, 2))
                 .mapToDouble(Double::doubleValue).sum() / workTimes.size();
 
         standardDeviation = Math.sqrt(standardDeviation);
+
+        printWriter.println("Max iterations: " + MAX_ITER + "\n");
 
         for (Double time : workTimes) {
             printWriter.println(time.toString().replace('.', ','));

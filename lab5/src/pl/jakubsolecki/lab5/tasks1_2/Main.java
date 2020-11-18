@@ -9,13 +9,15 @@ public class Main {
     public static void main(String[] args) {
 
         int threads = 4;
-        int tasks = 100;
+        int tasks = 40;
+        int MAX_ITER = 57000;
+
         try {
-            TimeMeter timeMeter = new TimeMeter("times_"+tasks+"tasks_"+threads+"threads.txt");
+            TimeMeter timeMeter = new TimeMeter("times_"+tasks+"tasks_"+threads+"threads.txt", MAX_ITER);
 
             for (int i = 0; i < 10; i++) {
                 new MandelbrotSetSplitter(
-                        5700,
+                        MAX_ITER,
                         150,
                         800,
                         600,
