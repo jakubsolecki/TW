@@ -1,13 +1,17 @@
 package pl.jakubsolecki.lab5.tasks1_2;
 
+import pl.jakubsolecki.lab5.TimeMeter;
+
 import java.io.IOException;
 
 public class Main {
 
     public static void main(String[] args) {
 
+        int threads = 4;
+        int tasks = 100;
         try {
-            TimeMeter timeMeter = new TimeMeter("times_4tasks_4threads.txt");
+            TimeMeter timeMeter = new TimeMeter("times_"+tasks+"tasks_"+threads+"threads.txt");
 
             for (int i = 0; i < 10; i++) {
                 new MandelbrotSetSplitter(
@@ -17,8 +21,8 @@ public class Main {
                         600,
                         400,
                         300,
-                        4,
-                        4,
+                        threads,
+                        tasks,
                         timeMeter
                 ).setVisible(true);
             }

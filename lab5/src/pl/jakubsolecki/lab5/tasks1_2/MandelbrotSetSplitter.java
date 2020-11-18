@@ -1,10 +1,10 @@
 package pl.jakubsolecki.lab5.tasks1_2;
 
+import pl.jakubsolecki.lab5.TimeMeter;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -33,7 +33,7 @@ public class MandelbrotSetSplitter extends JFrame {
             int threads,
             int tasks,
             TimeMeter timeMeter
-    ) throws IOException {
+    ) {
 
         super("Mandelbrot Set");
         setBounds(100, 100, WIDTH, HEIGHT);

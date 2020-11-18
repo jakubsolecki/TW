@@ -1,4 +1,6 @@
-package pl.jakubsolecki.lab5.warm_up;
+package pl.jakubsolecki.lab5.task3;
+
+import pl.jakubsolecki.lab5.TimeMeter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,8 +21,9 @@ public class SplitMandelbrot extends JFrame {
     private final BufferedImage I;
     private final ExecutorService executor;
     private final ArrayList<PixelRecord> pixelRecords = new ArrayList<>();
+    private final TimeMeter timeMeter;
 
-    public SplitMandelbrot(int threads, int xPos, int yPos) {
+    public SplitMandelbrot(int threads, int xPos, int yPos, TimeMeter timeMeter) {
         super("BasicMandelbrot Set");
         setBounds(100, 100, WIDTH, HEIGHT);
         setResizable(false);
@@ -29,11 +32,12 @@ public class SplitMandelbrot extends JFrame {
         executor = Executors.newFixedThreadPool(threads);
         this.xPos = xPos;
         this.yPos = yPos;
+        this.timeMeter = timeMeter;
         compute();
     }
 
     private void compute () {
-        long startTime = System.nanoTime();
+        timeMeter.startTime();
 
         for (int y = 0; y < HEIGHT; y++) {
             for (int x = 0; x < WIDTH; x++) {
@@ -55,16 +59,11 @@ public class SplitMandelbrot extends JFrame {
             } catch (InterruptedException | ExecutionException ignored) {}
         }
 
-        double computingTime = System.nanoTime() - startTime;
-        System.out.println(computingTime / 1_000_000_000);
+        timeMeter.startTime();
     }
 
     @Override
     public void paint(Graphics g) {
         g.drawImage(I, 0, 0, this);
-    }
-
-    public static void main(String[] args) {
-        new SplitMandelbrot(4, 400, 300).setVisible(true);
     }
 }

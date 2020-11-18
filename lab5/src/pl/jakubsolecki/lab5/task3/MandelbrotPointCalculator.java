@@ -1,4 +1,4 @@
-package pl.jakubsolecki.lab5.warm_up;
+package pl.jakubsolecki.lab5.task3;
 
 import java.util.concurrent.Callable;
 
