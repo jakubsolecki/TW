@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
 
         int threads = 4;
-        int tasks = 40;
+        int tasks = 4;
         int MAX_ITER = 57000;
 
         try {
