@@ -3,4 +3,5 @@
 *.iml
 target/
 out/
+node_modules/
 programowanie_wspolbiezne.pdf
