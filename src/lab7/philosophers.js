@@ -67,19 +67,25 @@ Philosopher.prototype.startNaive = function(count) {
     setTimeout(() => eat(id, count), 0);
 };
 
+let sumOfTimes = 0;
+
 Philosopher.prototype.startAsym = function(count) {
     let forks = this.forks,
         id = this.id,
         f1 = id % 2 == 0 ? this.f1 : this.f2,
         f2 = id % 2 == 0 ? this.f2 : this.f1;
 
+        let startTime;
+
         const eat = (id, count) => {
             printForks();
+            startTime = Date.now();
             forks[f1].acquire(() => {
                 printForks();
                 forks[f2].acquire(() => {
                     printForks();
                     setTimeout(() => {
+                        sumOfTimes += (Date.now() - startTime);
                         printForks();
                         forks[f1].release(() => {
                             printForks();
@@ -101,8 +107,11 @@ Philosopher.prototype.startAsym = function(count) {
 
 Philosopher.prototype.startConductor = function(count) {
 
+    let startTime;
+
     if (count > 0) {
-        conductor.requestForks(this, count);
+        startTime = Date.now();
+        conductor.requestForks(this, count, startTime);
     }
 };
 
@@ -115,7 +124,7 @@ var Conductor = function() {
     return this;
 }
 
-Conductor.prototype.requestForks = function(philosopher, count) {
+Conductor.prototype.requestForks = function(philosopher, count, startTime) {
     let forks = philosopher.forks,
         id = philosopher.id,
         f1 = philosopher.f1,
@@ -123,13 +132,14 @@ Conductor.prototype.requestForks = function(philosopher, count) {
 
         printForks();
     if (forks[f1].state === 0 && forks[f2].state === 0 && this.philosophersCounter < N) {
+        sumOfTimes += (Date.now() - startTime);
         forks[f1].state = 1;
         forks[f2].state = 1;   
         this.philosophersCounter += 1; 
         printForks();
         philosopher.giveForks(count);
     } else {
-        setTimeout(() => this.requestForks(philosopher, count), 2);
+        setTimeout(() => this.requestForks(philosopher, count, startTime), 2);
     }
 }
 
@@ -163,5 +173,7 @@ for (let i = 0; i < N; i++) {
 for (let i = 0; i < N; i++) {
     // philosophers[i].startNaive(2000);
     // philosophers[i].startAsym(10);
-    philosophers[i].startConductor(10);
+    philosophers[i].startConductor(100);
 }
+
+setTimeout(() => console.log(sumOfTimes), 1000);
